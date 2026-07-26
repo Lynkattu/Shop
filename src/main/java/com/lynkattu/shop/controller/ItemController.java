@@ -1,6 +1,8 @@
 package com.lynkattu.shop.controller;
 
 import com.lynkattu.shop.model.ItemModel;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -17,13 +19,16 @@ import java.util.Objects;
 public class ItemController {
 
     @GetMapping("")
-    public List<ItemModel> getAllItems() {
+    public ResponseEntity<?> getAllItems() {
         List<ItemModel> items = Collections.<ItemModel>emptyList();
-        return items;
+
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(items);
     }
 
     @GetMapping("/{id}")
-    public ItemModel getItemById(@PathVariable String id) {
+    public ResponseEntity<?> getItemById(@PathVariable String id) {
         ItemModel item = new ItemModel(
                 "12345",
                 "test item",
@@ -35,10 +40,20 @@ public class ItemController {
         );
 
         if (Objects.equals(item.id(), id)) {
-            return item;
+            return ResponseEntity
+                    .status(HttpStatus.OK)
+                    .body(item);
         }
-        
-        return null;
+
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Item not found");
     }
+
+    @GetMapping("")
+    public ResponseEntity<?> addItem() {
+        return new ResponseEntity<>("Item Created successfully", HttpStatus.CREATED);
+    }
+
 
 }
