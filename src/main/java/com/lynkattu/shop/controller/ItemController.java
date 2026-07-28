@@ -1,12 +1,11 @@
 package com.lynkattu.shop.controller;
 
 import com.lynkattu.shop.model.ItemModel;
+import com.lynkattu.shop.repository.ItemRepository;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,9 +17,16 @@ import java.util.Objects;
 @RequestMapping("/api/item")
 public class ItemController {
 
+    private final ItemRepository repository;
+
+    public ItemController(ItemRepository repository) {
+        this.repository = repository;
+    }
+
     @GetMapping("")
     public ResponseEntity<?> getAllItems() {
-        List<ItemModel> items = Collections.<ItemModel>emptyList();
+
+        List<ItemModel> items = repository.findAllItems();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -29,30 +35,23 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getItemById(@PathVariable String id) {
-        ItemModel item = new ItemModel(
-                "12345",
-                "test item",
-                BigDecimal.valueOf(12.99),
-                "Random item.",
-                null,
-                LocalDateTime.now(),
-                LocalDateTime.now()
-        );
+        ItemModel item = repository.findItemById(id);
 
         if (Objects.equals(item.id(), id)) {
             return ResponseEntity
                     .status(HttpStatus.OK)
                     .body(item);
+        } else {
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found");
         }
 
-        return ResponseEntity
-                .status(HttpStatus.NOT_FOUND)
-                .body("Item not found");
     }
 
-    @GetMapping("")
+    @PostMapping("")
     public ResponseEntity<?> addItem() {
-        return new ResponseEntity<>("Item Created successfully", HttpStatus.CREATED);
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body("Item Created successfully");
     }
 
 
