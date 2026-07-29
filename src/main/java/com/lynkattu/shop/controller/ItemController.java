@@ -2,6 +2,7 @@ package com.lynkattu.shop.controller;
 
 import com.lynkattu.shop.model.ItemModel;
 import com.lynkattu.shop.repository.ItemRepository;
+import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -47,8 +48,9 @@ public class ItemController {
 
     }
 
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("")
-    public ResponseEntity<?> addItem() {
+    public ResponseEntity<?> addItem(@Valid @RequestBody ItemModel item) {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Item Created successfully");
