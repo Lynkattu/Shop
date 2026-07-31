@@ -1,6 +1,7 @@
 package com.lynkattu.shop.controller;
 
 import com.lynkattu.shop.model.ItemModel;
+import com.lynkattu.shop.model.ItemRequest;
 import com.lynkattu.shop.repository.ItemRepository;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -13,6 +14,7 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/item")
@@ -23,6 +25,7 @@ public class ItemController {
     public ItemController(ItemRepository repository) {
         this.repository = repository;
     }
+    private Optional<ItemModel> item;
 
     @GetMapping("")
     public ResponseEntity<?> getAllItems() {
@@ -36,21 +39,22 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getItemById(@PathVariable String id) {
-        ItemModel item = repository.findItemById(id);
+        Optional<ItemModel> item = repository.findItemById(id);
 
-        if (Objects.equals(item.id(), id)) {
-            return ResponseEntity
-                    .status(HttpStatus.OK)
-                    .body(item);
-        } else {
+        if (item.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found");
         }
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(item);
+
 
     }
 
     @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("")
-    public ResponseEntity<?> addItem(@Valid @RequestBody ItemModel item) {
+    public ResponseEntity<?> addItem(@Valid @RequestBody ItemRequest itemRequest) {
+        Optional<ItemModel> item = repository.createItem(itemRequest);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body("Item Created successfully");
