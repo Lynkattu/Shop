@@ -1,0 +1,9 @@
+items (
+    id BINARY(16) PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    price DECIMAL(6,2) NOT NULL,
+    description TEXT NOT NULL,
+    itemCategory VARCHAR(255) NOT NULL,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);

@@ -5,6 +5,7 @@ import com.lynkattu.shop.model.ItemRequest;
 import org.springframework.jdbc.core.simple.JdbcClient;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
@@ -21,7 +22,15 @@ public class ItemRepository {
     //----------------------------------------------------------------------------------------------------------------
     public List<ItemModel> findAllItems() {
         return jdbc.sql("""
-                SELECT * FROM items;
+                SELECT
+                    HEX(id) AS id,
+                    name,
+                    price,
+                    description,
+                    itemCategory,
+                    createdAt,
+                    updatedAt
+                FROM items;
                 """
         ).query(ItemModel.class).list();
     }
@@ -29,16 +38,24 @@ public class ItemRepository {
     public Optional<ItemModel> findItemById(String id) {
         return jdbc.sql(
             """
-            SELECT * FROM items
-            WHERE id = :id
+            SELECT
+                HEX(id) AS id,
+                name,
+                price,
+                description,
+                itemCategory,
+                createdAt,
+                updatedAt
+            FROM items
+            WHERE id = UNHEX(REPLACE(:id, '-', ''))
             """)
-                .params("id", id)
+                .param("id", id)
                 .query(ItemModel.class)
                 .optional();
     }
 
-    public Optional<ItemModel> createItem(ItemRequest item) {
-        String id = UUID.randomUUID().toString();
+    public ItemModel createItem(ItemRequest item) {
+        String id = UUID.randomUUID().toString().replace("-", "");;
 
         jdbc.sql("""
             INSERT INTO items (
@@ -46,12 +63,12 @@ public class ItemRepository {
                 name,
                 price,
                 description,
-                item_category,
-                created_at,
-                updated_at
+                itemCategory,
+                createdAt,
+                updatedAt
             )
             VALUES (
-                :id,
+                UNHEX(:id),
                 :name,
                 :price,
                 :description,
@@ -64,10 +81,18 @@ public class ItemRepository {
                 .param("name", item.name())
                 .param("price", item.price())
                 .param("description", item.description())
-                .param("itemCategory", item.itemCategory())
+                .param("itemCategory", item.itemCategory().name())
                 .update();
 
-        return findItemById(id);
+        return new ItemModel(
+                id,
+                item.name(),
+                item.price(),
+                item.description(),
+                item.itemCategory(),
+                LocalDateTime.now(),
+                LocalDateTime.now()
+        );
     }
 
 }

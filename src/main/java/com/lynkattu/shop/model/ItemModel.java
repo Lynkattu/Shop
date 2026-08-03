@@ -1,5 +1,6 @@
 package com.lynkattu.shop.model;
 
+import com.lynkattu.shop.enums.ItemCategory;
 import jakarta.persistence.Id;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Digits;
@@ -14,7 +15,7 @@ public record ItemModel(
         String name,
         BigDecimal price,
         String description,
-        String itemCategory,
+        ItemCategory itemCategory,
         LocalDateTime createdAt,
         LocalDateTime updatedAt
 ) {}

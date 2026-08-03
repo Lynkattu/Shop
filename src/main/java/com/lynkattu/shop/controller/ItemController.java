@@ -3,6 +3,7 @@ package com.lynkattu.shop.controller;
 import com.lynkattu.shop.model.ItemModel;
 import com.lynkattu.shop.model.ItemRequest;
 import com.lynkattu.shop.repository.ItemRepository;
+import com.lynkattu.shop.service.ItemService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -11,26 +12,22 @@ import org.springframework.web.server.ResponseStatusException;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.List;
-import java.util.Objects;
-import java.util.Optional;
+import java.util.*;
 
 @RestController
 @RequestMapping("/api/item")
 public class ItemController {
 
-    private final ItemRepository repository;
+    private final ItemService service;
 
-    public ItemController(ItemRepository repository) {
-        this.repository = repository;
+    public ItemController(ItemService service) {
+        this.service = service;
     }
-    private Optional<ItemModel> item;
 
     @GetMapping("")
     public ResponseEntity<?> getAllItems() {
 
-        List<ItemModel> items = repository.findAllItems();
+        List<ItemModel> items = service.findAllItems();
 
         return ResponseEntity
                 .status(HttpStatus.OK)
@@ -39,7 +36,7 @@ public class ItemController {
 
     @GetMapping("/{id}")
     public ResponseEntity<?> getItemById(@PathVariable String id) {
-        Optional<ItemModel> item = repository.findItemById(id);
+        Optional<ItemModel> item = service.findItemById(id);
 
         if (item.isEmpty()) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Item not found");
@@ -47,17 +44,15 @@ public class ItemController {
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(item);
-
-
     }
 
-    @ResponseStatus(HttpStatus.NO_CONTENT)
     @PostMapping("")
-    public ResponseEntity<?> addItem(@Valid @RequestBody ItemRequest itemRequest) {
-        Optional<ItemModel> item = repository.createItem(itemRequest);
+    public ResponseEntity<ItemModel> addItem(@Valid @RequestBody ItemRequest itemRequest) {
+        ItemModel createdItem = service.createItem(itemRequest);
+
         return ResponseEntity
-                .status(HttpStatus.OK)
-                .body("Item Created successfully");
+                .status(HttpStatus.CREATED)
+                .body(createdItem);
     }
 
 
