@@ -12,9 +12,6 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 import java.util.Optional;
 
-import static java.lang.IO.println;
-import static java.rmi.server.LogStream.log;
-
 @Service
 public class ItemService {
     private static final Logger log = LoggerFactory.getLogger(ItemService.class);

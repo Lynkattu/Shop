@@ -67,6 +67,12 @@
 			<artifactId>dotenv-spring-boot</artifactId>
 			<version>1.0.0</version>
 		</dependency>
+
+		<dependency>
+			<groupId>com.aventrix.jnanoid</groupId>
+			<artifactId>jnanoid</artifactId>
+			<version>1.0.1</version>
+		</dependency>
 	</dependencies>
 
 	<build>

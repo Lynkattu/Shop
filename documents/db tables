@@ -7,3 +7,65 @@ items (
     createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+users (
+    id BINARY(16) PRIMARY KEY,
+    firstname VARCHAR(255) NOT NULL,
+    lastname VARCHAR(255) NOT NULL,
+    email VARCHAR(320) NOT NULL,
+    phone VARCHAR(16) DEFAULT "",
+    address VARCHAR(255) NOT NULL,
+    postalcode VARCHAR(12) NOT NULL,
+    city VARCHAR(255) NOT NULL,
+    country VARCHAR(255) NOT NULL,
+    username VARCHAR(255) NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    membershipNumber VARCHAR(7) NOT NULL,
+    balance decimal(15,2) DEFAULT 0,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+purchaseOrder (
+    id BINARY(16) PRIMARY KEY,
+    user_id BINARY(16) NOT NULL,
+    OrderStatus orderStatus,
+    PaymentStatus paymentStatus,
+    createdAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updatedAt TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+
+   FOREIGN KEY (user_id) REFERENCES users(id)
+        ON DELETE CASCADE,
+);
+
+purchaseOrderItems (
+    purchaseOrderId BINARY(16) PRIMARY KEY,
+    itemId BINARY(16) NOT NULL,
+    quantity INT NOT NULL,
+
+    PRIMARY KEY (purchase_order_id, item_id),
+
+    FOREIGN KEY (purchase_order_id)
+        REFERENCES purchase_orders(purchase_order_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (item_id)
+        REFERENCES items(item_id)
+        ON DELETE RESTRICT
+);
+
+refundedPurchaseOrderItems (
+    purchaseOrderId BINARY(16) PRIMARY KEY,
+    itemId BINARY(16) NOT NULL,
+    quantity INT NOT NULL,
+
+    PRIMARY KEY (purchase_order_id, item_id),
+
+    FOREIGN KEY (purchase_order_id)
+        REFERENCES purchase_orders(purchase_order_id)
+        ON DELETE CASCADE,
+
+    FOREIGN KEY (item_id)
+        REFERENCES items(item_id)
+        ON DELETE RESTRICT
+);
